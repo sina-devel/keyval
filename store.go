@@ -45,26 +45,27 @@ func NewMemoryStore() *MemoryStore {
 // note: if the key already exists, it overwrites it.
 func (m *MemoryStore) Put(key string, val []byte) error {
 	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.data[key] = val
-	m.mu.Unlock()
 	return nil
 }
 
 // Get gets the key and returns the value.
 func (m *MemoryStore) Get(key string) ([]byte, error) {
 	m.mu.Lock()
+	defer m.mu.Unlock()
 
 	if val, ok := m.data[key]; ok {
 		return val, nil
 	}
 
-	m.mu.Unlock()
 	return nil, ErrNotExist
 }
 
 // Drop drops the given key.
 func (m *MemoryStore) Drop(key string) error {
 	m.mu.Lock()
+	defer m.mu.Unlock()
 
 	if _, ok := m.data[key]; ok {
 		delete(m.data, key)
@@ -72,19 +73,18 @@ func (m *MemoryStore) Drop(key string) error {
 		return nil
 	}
 
-	m.mu.Unlock()
 	return ErrNotExist
 }
 
 // Keys returns all the stored keys.
 func (m *MemoryStore) Keys() []string {
 	m.mu.Lock()
+	defer m.mu.Unlock()
 
 	var keys []string
 	for k := range m.data {
 		keys = append(keys, k)
 	}
 
-	m.mu.Unlock()
 	return keys
 }
