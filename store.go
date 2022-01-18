@@ -69,7 +69,6 @@ func (m *MemoryStore) Drop(key string) error {
 
 	if _, ok := m.data[key]; ok {
 		delete(m.data, key)
-		m.mu.Unlock()
 		return nil
 	}
 
